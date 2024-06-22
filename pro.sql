@@ -1,4 +1,4 @@
-
+DROP DATABASE IF EXISTS `mydb`;
 CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
 USE `mydb` ;
 
@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Médico` (
   `Horários disponíveis` VARCHAR(45) NULL,
   PRIMARY KEY (`idMédico`));
 
-
 -- -----------------------------------------------------
 -- Table `mydb`.`Consulta`
 -- -----------------------------------------------------
@@ -45,7 +44,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Consulta` (
     REFERENCES `mydb`.`Paciente` (`CPF`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
-
 
 -- -----------------------------------------------------
 -- Table `mydb`.`Hospital`
@@ -92,4 +90,50 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Prescrição` (
     REFERENCES `mydb`.`Consulta` (`idConsulta`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+    
+-- Inserindo Valores
+insert into hospital values(default, 'Delfim Moreira','Rua Antonio Fagundes','3471-2878');
+insert into médico values(default,'Fernando','Cardiologista', '10:00 - 15:00');
+insert into paciente values(1234, 'Jorge', 68, 'M');
+insert into trabalha values(1,1);
+insert into consulta values(default, '19/05/24', 'Muita tosse', 'Baixa pressão', 1,1234);
+insert into prescrição values(default, 'Novalgina','2-8hrs','15 dias',1);
 
+insert into hospital values(default, 'Madre Teresa','Rua Gonçalves Mendonça','3471-9811');
+insert into médico values(default,'Tulio','Ortopedista', '11:00 - 18:00');
+insert into paciente values(666678, 'José',70, 'M');
+insert into trabalha values(2,2);
+insert into consulta values(default, '19/05/24', 'Muita tosse', 'Baixa pressão', 1,1234);
+insert into prescrição values(default, 'Novalgina','2-8hrs','15 dias',1);
+
+-- CRUD
+
+-- Create
+INSERT INTO Paciente (CPF, Nome, Idade, Gênero) VALUES (123456789, 'João Silva', 30, 'Masculino');
+
+-- Read
+SELECT * FROM Paciente WHERE CPF = 123456789;
+
+-- Update
+UPDATE Paciente SET Nome = 'João Pedro Silva', Idade = 31 WHERE CPF = 123456789;
+
+-- Delete
+DELETE FROM Paciente WHERE CPF = 123456789;
+
+DELIMITER //
+CREATE PROCEDURE AddConsulta(
+    IN p_DataConsulta VARCHAR(45),
+    IN p_DiagnosticoBasico VARCHAR(45),
+    IN p_Observacoes VARCHAR(45),
+    IN p_MedicoId INT,
+    IN p_PacienteCPF INT
+)
+BEGIN
+    INSERT INTO Consulta (`Data consulta`, `Diagnóstico básico`, `Observações`, Médico_idMédico, Paciente_CPF)
+    VALUES (p_DataConsulta, p_DiagnosticoBasico, p_Observacoes, p_MedicoId, p_PacienteCPF);
+END //
+
+DELIMITER ;
+
+CALL AddConsulta('2023-06-22', 'Hipertensão', 'Paciente deve evitar sal', 1, 123456789);
+select * from consulta;
